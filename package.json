@@ -4,6 +4,7 @@
     "dev": "nodemon mongodb.js"
   },
   "dependencies": {
+    "chalk": "^4.1.1",
     "mongodb": "^3.6.6",
     "mongoose": "^5.12.9"
   }
