@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "node mongodb.js",
+    "dev": "nodemon mongodb.js"
+  },
+  "dependencies": {
+    "mongodb": "^3.6.6",
+    "mongoose": "^5.12.9"
+  }
+}
