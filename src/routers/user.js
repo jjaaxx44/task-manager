@@ -25,8 +25,8 @@ router.get('/users/:id', async (req, res) => {
     const _id = req.params.id
     try {
         const user = await User.findById(_id)
-        if(!user){
-            return res.status(404).send('nothing found')    
+        if (!user) {
+            return res.status(404).send('nothing found')
         }
         res.send(user)
     } catch (e) {
@@ -39,14 +39,21 @@ router.patch('/users/:id', async (req, res) => {
     const allowedUpdates = ['name', 'email', 'password', 'age']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
-    if(!isValidOperation) {
+    if (!isValidOperation) {
         return res.status(404).send('invalid updates')
     }
 
     const _id = req.params.id
     try {
-        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
-        if(!user) {
+
+        // const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
+        //above will not run middleware for password hashing, so instead use below
+        const user = await User.findByIdAndUpdate(_id)
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
+
+
+        if (!user) {
             return res.status(404).send('user not found')
         }
         res.send(user)
@@ -59,7 +66,7 @@ router.delete('/users/:id', async (req, res) => {
     const _id = req.params.id
     try {
         const user = await User.findByIdAndDelete(_id)
-        if(!user) {
+        if (!user) {
             return res.status(404).send('user not found')
         }
         res.send(user)

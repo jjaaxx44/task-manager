@@ -1,10 +1,9 @@
-const { response } = require('express')
 const express = require('express')
-const constants = require('./constants')
 require('./db/mongoose')
-const { ObjectID } = require('bson')
+
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
+const constants = require('./constants')
 
 const app = express()
 const port = process.env.PORT || 3000

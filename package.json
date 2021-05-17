@@ -4,6 +4,7 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "chalk": "^4.1.1",
     "express": "^4.17.1",
     "mongodb": "^3.6.6",
