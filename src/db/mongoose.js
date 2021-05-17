@@ -1,11 +1,6 @@
 const mongoose = require('mongoose')
-const chalk = require('chalk')
 const validator = require('validator')
-const express = require('express')
-
-const errChalk = chalk.white.bgRed
-const statusChalk = chalk.greenBright.bgBlue
-const log = console.log
+const constants = require('../constants')
 
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api', {
     useNewUrlParser: true,
@@ -58,9 +53,9 @@ const User = mongoose.model('User', {
 // })
 
 // me.save().then((result) => {
-//     log(statusChalk(result))
+//     console.log(constants.statusChalk(result))
 // }).catch((error) => {
-//     log(errChalk(error))
+//     console.log(constants.errChalk(error))
 // })
 
 
@@ -80,7 +75,7 @@ const Task = mongoose.model('Task', {
 //     description: 'eat lunch',
 //     completed: false
 // }).save().then((result) => {
-//     log(statusChalk(result))
+//     console.log(constants.statusChalk(result))
 // }).catch((error) => {
-//     log(errChalk(error))
+//     console.log(constants.errChalk(error))
 // })
