@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "start": "node mongodb.js",
-    "dev": "nodemon mongodb.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
     "chalk": "^4.1.1",
