@@ -13,11 +13,11 @@ const User = require('../src/models/user')
 // })
 
 const updateAndCount = async (_id, age) => {
-    const user = await User.findByIdAndUpdate(_id, { age })
-    const count = await User.countDocuments({ age })
-    return count
+	// const user = await User.findByIdAndUpdate(_id, { age })
+	const count = await User.countDocuments({ age })
+	return count
 }
 
 updateAndCount('60a20a2cc61c7a1ef565044b', 36).then((count) => {
-    console.log(count);
+	console.log(count)
 })
