@@ -1,9 +1,15 @@
 const express = require('express')
-const router = new express.Router()
 const Task = require('../models/task')
+const auth = require('../middleware/auth')
 
-router.post('/tasks', async (req, res) => {
-	const task = new Task(req.body)
+const router = new express.Router()
+
+router.post('/tasks', auth, async (req, res) => {
+	const task = new Task({
+		...req.body,
+		owner: req.user._id
+	})
+
 	try {
 		await task.save()
 		res.status(201).send('added ' + task)
@@ -12,20 +18,43 @@ router.post('/tasks', async (req, res) => {
 	}
 })
 
-router.get('/tasks', async (req, res) => {
+// GET /tasks?completed=true
+// GET /tasks?limit=1&skip=10
+// GET /tasks?sortBy=created:asc
+router.get('/tasks', auth, async (req, res) => {
+	const match = {}
+	const sort = {}
+	const query = req.query
+	if(query.completed) {
+		match.completed = query.completed === 'true'
+	}
+	if(query.sortBy) {
+		const parts = query.sortBy.split(':')
+		sort[parts[0]] = parts[1]==='desc' ? -1 : 1
+	}
+
 	try {
-		const tasks = await Task.find({})
-		res.send(tasks)
+		await req.user.populate({
+			path: 'tasks',
+			match,
+			options: {
+				limit: parseInt(query.limit),
+				skip: parseInt(query.skip),
+				sort
+			}
+		}).execPopulate()
+		res.send(req.user.tasks)
 	} catch (e) {
 		res.status(500).send(e)
 	}
 })
 
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', auth, async (req, res) => {
 	const _id = req.params.id
 
 	try {
-		const task = await Task.findById(_id)
+		const task = await Task.findOne({ _id, owner: req.user._id })
+
 		if (!task) {
 			return res.status(404).send('nothing found')
 		}
@@ -35,7 +64,7 @@ router.get('/tasks/:id', async (req, res) => {
 	}
 })
 
-router.patch('/tasks/:id', async (req, res) => {
+router.patch('/tasks/:id', auth, async (req, res) => {
 	const updates = Object.keys(req.body)
 	const allowedUpdates = ['description', 'completed']
 	const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -43,8 +72,6 @@ router.patch('/tasks/:id', async (req, res) => {
 	if (!isValidOperation) {
 		return res.status(404).send('invalid updates')
 	}
-
-	const _id = req.params.id
 	try {
 		// const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
         
@@ -52,25 +79,26 @@ router.patch('/tasks/:id', async (req, res) => {
 		//in current example there is no middleware like used in user model for hashing, 
 		// but code is updated as user just in case
 
-		const task = await Task.findById(_id)
-		task.forEach((update) => task[update] = req.body[update])
-		await task.save()
+		const task = await Task.findOne({_id: req.params.id, owner: req.user._id})
 		if (!task) {
-			return res.status(404).send('user no found')
+			return res.status(404).send('task not found')
 		}
+		updates.forEach((update) => task[update] = req.body[update])
+		await task.save()
 		res.send(task)
 	} catch (e) {
 		res.status(400).send(e)
 	}
 })
 
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', auth, async (req, res) => {
 	const _id = req.params.id
 	try {
-		const task = await Task.findByIdAndDelete(_id)
+		const task = await Task.findOne({_id, owner: req.user._id})
 		if (!task) {
 			return res.status(404).send('task not found')
 		}
+		task.remove()
 		res.send(task)
 	} catch (e) {
 		res.status(500).send(e)

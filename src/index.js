@@ -13,5 +13,6 @@ app.use(userRouter)
 app.use(taskRouter)
 
 app.listen(port, () => {
+	// eslint-disable-next-line no-console
 	console.log(constants.statusChalk('Server is up on port ' + port))
 })
