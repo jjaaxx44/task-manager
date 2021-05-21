@@ -12,7 +12,7 @@ router.post('/tasks', auth, async (req, res) => {
 
 	try {
 		await task.save()
-		res.status(201).send('added ' + task)
+		res.status(201).send(task)
 	} catch (e) {
 		res.status(400).send(e)
 	}
@@ -25,12 +25,12 @@ router.get('/tasks', auth, async (req, res) => {
 	const match = {}
 	const sort = {}
 	const query = req.query
-	if(query.completed) {
+	if (query.completed) {
 		match.completed = query.completed === 'true'
 	}
-	if(query.sortBy) {
+	if (query.sortBy) {
 		const parts = query.sortBy.split(':')
-		sort[parts[0]] = parts[1]==='desc' ? -1 : 1
+		sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
 	}
 
 	try {
@@ -74,12 +74,12 @@ router.patch('/tasks/:id', auth, async (req, res) => {
 	}
 	try {
 		// const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
-        
+
 		//above will not run middleware, so instead use below,
 		//in current example there is no middleware like used in user model for hashing, 
 		// but code is updated as user just in case
 
-		const task = await Task.findOne({_id: req.params.id, owner: req.user._id})
+		const task = await Task.findOne({ _id: req.params.id, owner: req.user._id })
 		if (!task) {
 			return res.status(404).send('task not found')
 		}
@@ -94,7 +94,7 @@ router.patch('/tasks/:id', auth, async (req, res) => {
 router.delete('/tasks/:id', auth, async (req, res) => {
 	const _id = req.params.id
 	try {
-		const task = await Task.findOne({_id, owner: req.user._id})
+		const task = await Task.findOne({ _id, owner: req.user._id })
 		if (!task) {
 			return res.status(404).send('task not found')
 		}

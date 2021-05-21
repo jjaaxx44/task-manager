@@ -1,16 +1,6 @@
-const express = require('express')
-require('./db/mongoose')
-
-const userRouter = require('./routers/user')
-const taskRouter = require('./routers/task')
-const constants = require('./constants')
-
-const app = express()
+const app = require('./app')
 const port = process.env.PORT
-
-app.use(express.json())
-app.use(userRouter)
-app.use(taskRouter)
+const constants = require('./constants')
 
 app.listen(port, () => {
 	// eslint-disable-next-line no-console
